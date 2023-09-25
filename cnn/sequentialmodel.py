@@ -16,7 +16,7 @@ from os import listdir
 
 
 class ImageClassifier:
-  def __init__(self, str_path, img_height=28, img_width=28, batch_size=32, epochs=10):
+  def __init__(self, str_path, img_height=28, img_width=28, batch_size=32, epochs=100):
     self.str_path = str_path
     self.img_height = img_height
     self.img_width = img_width
@@ -117,6 +117,7 @@ class ImageClassifier:
     for img in os.listdir("C:/Users/realc/OneDrive/Documents/IoM/Code/dataset/test"):
       img_dir = os.path.join("C:/Users/realc/OneDrive/Documents/IoM/Code/dataset/test", img)
       img_dir = pathlib.Path(img_dir)
+      # print(img_dir)
 
       img = tf.keras.utils.load_img(
         img_dir, target_size=(self.img_height, self.img_width)
@@ -125,8 +126,11 @@ class ImageClassifier:
       img_array = tf.keras.utils.img_to_array(img)
       img_array = tf.expand_dims(img_array, 0)  # Create a batch
 
+      self.model.load_weights("models/sequential/cp.ckpt").expect_partial()
+
       predictions = self.model.predict(img_array)
       score = tf.nn.softmax(predictions[0])
+      # print(str(self.class_names[np.argmax(score)]))
 
       if str(self.class_names[np.argmax(score)]) in str(img_dir):
         correct += 1
@@ -137,27 +141,27 @@ class ImageClassifier:
     return final_accuracy
   
 
-  def analyze_image(self, img):
-    img_dir = Path(img)
+  # def analyze_image(self, img):
+  #   img_dir = Path(img)
 
-    img = tf.keras.utils.load_img(
-      img_dir, target_size=(self.img_height, self.img_width)
-    )
+  #   img = tf.keras.utils.load_img(
+  #     img_dir, target_size=(self.img_height, self.img_width)
+  #   )
 
-    img_array = tf.keras.utils.img_to_array(img)
-    img_array = tf.expand_dims(img_array, 0)
+  #   img_array = tf.keras.utils.img_to_array(img)
+  #   img_array = tf.expand_dims(img_array, 0)
 
-    predictions = self.model.predict(img_array)
-    score = tf.nn.softmax(predictions[0])
+  #   predictions = self.model.predict(img_array)
+  #   score = tf.nn.softmax(predictions[0])
 
-    result = str(self.class_names[np.argmax(score)])
+  #   result = str(self.class_names[np.argmax(score)])
 
-    if "gummy" in result:
-      print("Excessive gingival display detected")
-    else:
-      print("No excessive gingival dispay detected")
+  #   if "gummy" in result:
+  #     print("Excessive gingival display detected")
+  #   else:
+  #     print("No excessive gingival dispay detected")
 
-    return result
+  #   return result
   
   def analyze_image(self):
     img_dir = Path("cropped_captured_image.jpg")
@@ -217,14 +221,14 @@ if __name__ == "__main__":
   # history = img_classifier.train_model()
   # img_classifier.model.summary()
 
-  # print(img_classifier.test_accuracy())
+  print(img_classifier.test_accuracy())
 
   # img_classifier.visualize_training(history)
 
   # CLASSIFY CUSTOM IMAGE
-  print(img_classifier.analyze_image())
+  # print(img_classifier.analyze_image())
 
-  if img_classifier.analyze_image():
-    print("Gummy smile detected")
-  else:
-    print("Normal smile")
+  # if img_classifier.analyze_image():
+  #   print("Gummy smile detected")
+  # else:
+  #   print("Normal smile")
